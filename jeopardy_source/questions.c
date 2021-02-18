@@ -14,7 +14,7 @@
 void initialize_game(void)
 {
     // initialize each question struct and assign it to the questions array
-	char categories[NUM_QUESTIONS][MAX_LEN] = {
+	char categories_list[NUM_QUESTIONS][MAX_LEN] = {
 		"programming",
 		"programming",
 		"programming",
@@ -28,7 +28,7 @@ void initialize_game(void)
 		"databases",
 		"databases"
 	};
-    	char questions[NUM_QUESTIONS][MAX_LEN] = {
+    	char questions_list[NUM_QUESTIONS][MAX_LEN] = {
 		"It is the most widely used systems programming language",
 		"It is the most widely used programming language for AI research",
 		"An example of this type of data would be a word in plain English",
@@ -42,7 +42,7 @@ void initialize_game(void)
 		"All databses are comprised of these constructs to store data entries",
 		"The ____ key is used to uniquely identify entries in a database"
 	};
-	char answers[NUM_QUESTIONS][MAX_LEN] = {
+	char answers_list[NUM_QUESTIONS][MAX_LEN] = {
 		"C",
 		"Python",
 		"String",
@@ -56,7 +56,7 @@ void initialize_game(void)
 		"Table",
 		"Primary"
 	};
-    	int values[NUM_QUESTIONS] = {
+    	int values_list[NUM_QUESTIONS] = {
 		20,
 		50,
 		100,
@@ -71,14 +71,11 @@ void initialize_game(void)
 		200
 	};
 	for(int i = 0; i<NUM_QUESTIONS; i++){
-		question q = {
-			categories[i],
-			questions[i],
-			answers[i],
-			values[i],
-			false
-		}
-		questions[i]=q;
+		strcpy(questions[i].question, &questions_list[i]);
+    		strcpy(questions[i].answer, &answers_list[i]);
+		strcpy(questions[i].category, &categories_list[i]);
+    		questions[i].value = values_list[i];
+		questions[i].answered = false;
 	}
 }
 
@@ -86,9 +83,10 @@ void initialize_game(void)
 void display_categories(void)
 {
     // print categories and dollar values for each unanswered question in questions array
+	printf("\n");
 	for(int i = 0; i<NUM_QUESTIONS; i++){
-		if (!questions[i].answered){
-			printf("%s   %d", &questions[i].question, &questions[i].value);
+		if (questions[i].answered == false){
+			printf("%s   %d\n", &questions[i].category, questions[i].value);
 		}
 	}
 }
@@ -97,7 +95,7 @@ void display_categories(void)
 void display_question(char *category, int value)
 {
 	for(int i = 0; i<NUM_QUESTIONS; i++){
-		if (questions[i].category==category && questions[i].value==value){
+		if (strcmp(questions[i].category, category)==0 && questions[i].value==value){
 			printf("%s", &questions[i].question);
 		}
 	}
@@ -108,9 +106,9 @@ bool valid_answer(char *category, int value, char *answer)
 {
     // Look into string comparison functions
 	for(int i = 0; i<NUM_QUESTIONS; i++){
-		if (questions[i].category==category && questions[i].value==value 
-			&& strcmp(questions[i].answer, answer)==0){
-			return true;
+		if (strcmp(questions[i].category, category)==0 && questions[i].value==value){
+			bool result = strcmp(answer, questions[i].answer)-10 == 0;
+			return result;
 		}
 	}
     return false;
@@ -121,9 +119,17 @@ bool already_answered(char *category, int value)
 {
     // lookup the question and see if it's already been marked as answered
 	for(int i = 0; i<NUM_QUESTIONS; i++){
-		if (questions[i].category==category && questions[i].value==value && questions[i].answered){
+		if (strcmp(questions[i].category, category)==0 && questions[i].value==value && questions[i].answered==true){
 			return true;
 		}
 	}
     return false;
+}
+
+bool all_answered_status() {
+	for(int i = 0; i < 12; i++)
+		if(questions[i].answered == false)
+			return false;
+
+	return true;
 }
